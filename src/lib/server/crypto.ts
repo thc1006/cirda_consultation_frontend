@@ -4,11 +4,18 @@ import crypto from 'node:crypto';
 import { env } from '$env/dynamic/private';
 
 const ALG = 'aes-256-gcm';
-const fallbackKey = Buffer.alloc(32, 7); // 純 dev 用，正式環境必填
+// dev fallback：32 bytes 固定值，僅供本機測試。正式環境必須提供 ENCRYPTION_KEY
+const fallbackKey = Buffer.alloc(32, 7);
 
 function getKey(): Buffer {
   const raw = env.ENCRYPTION_KEY;
-  if (!raw) return fallbackKey;
+  if (!raw) {
+    // production 沒設 → fail fast，避免資料用公開 key 加密
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('ENCRYPTION_KEY 未設定，正式環境拒絕啟動以保護受試者資料');
+    }
+    return fallbackKey;
+  }
   const buf = Buffer.from(raw, 'base64');
   if (buf.length !== 32) throw new Error('ENCRYPTION_KEY 必須為 base64 編碼的 32 bytes');
   return buf;
