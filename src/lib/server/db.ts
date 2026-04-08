@@ -55,7 +55,8 @@ export function getDb(): Database.Database {
   const url = env.DATABASE_URL || 'file:./local.db';
   const path = url.replace(/^file:/, '');
   _db = new Database(path);
-  _db.pragma('journal_mode = WAL');
+  // 刻意不啟用 WAL：某些 filesystem (k8s overlayfs / 沙箱 fs) 不支援 mmap，
+  // 啟用 WAL 會出現 SQLITE_IOERR_SHORT_READ。預設 rollback journal 對 demo 併發已足夠
   _db.exec(SCHEMA);
   return _db;
 }
