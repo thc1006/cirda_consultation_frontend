@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 七套主題色票，採 OKLCH 以維持感知亮度一致 */
+:root,
+[data-theme='light-default'] {
+  --bg: oklch(98% 0.005 250);
+  --surface: oklch(100% 0 0);
+  --fg: oklch(20% 0.02 250);
+  --fg-muted: oklch(40% 0.02 250);
+  --accent: oklch(45% 0.2 250);
+  --accent-fg: oklch(99% 0 0);
+  --success: oklch(60% 0.16 145);
+  --danger: oklch(55% 0.22 25);
+  --warn: oklch(72% 0.18 75);
+  --info: oklch(62% 0.14 230);
+  --focus-ring: oklch(55% 0.22 240);
+  --border: oklch(90% 0.01 250);
+}
+
+[data-theme='light-protan-deutan'] {
+  --bg: oklch(98% 0.005 250);
+  --surface: oklch(100% 0 0);
+  --fg: oklch(20% 0.02 250);
+  --fg-muted: oklch(45% 0.02 250);
+  --accent: oklch(55% 0.16 250);
+  --accent-fg: oklch(99% 0 0);
+  --success: oklch(62% 0.14 220);
+  --danger: oklch(55% 0.18 60);
+  --warn: oklch(72% 0.16 80);
+  --info: oklch(62% 0.14 210);
+  --focus-ring: oklch(55% 0.2 250);
+  --border: oklch(90% 0.01 250);
+}
+
+[data-theme='light-tritan'] {
+  --bg: oklch(98% 0.005 30);
+  --surface: oklch(100% 0 0);
+  --fg: oklch(20% 0.02 30);
+  --fg-muted: oklch(45% 0.02 30);
+  --accent: oklch(55% 0.18 350);
+  --accent-fg: oklch(99% 0 0);
+  --success: oklch(62% 0.14 145);
+  --danger: oklch(55% 0.22 20);
+  --warn: oklch(72% 0.16 50);
+  --info: oklch(60% 0.14 320);
+  --focus-ring: oklch(55% 0.2 350);
+  --border: oklch(90% 0.01 30);
+}
+
+[data-theme='dark-default'] {
+  --bg: oklch(18% 0.01 250);
+  --surface: oklch(24% 0.01 250);
+  --fg: oklch(96% 0 0);
+  --fg-muted: oklch(70% 0.02 250);
+  --accent: oklch(72% 0.16 240);
+  --accent-fg: oklch(15% 0 0);
+  --success: oklch(72% 0.14 145);
+  --danger: oklch(70% 0.22 25);
+  --warn: oklch(80% 0.16 80);
+  --info: oklch(72% 0.14 230);
+  --focus-ring: oklch(80% 0.18 240);
+  --border: oklch(32% 0.01 250);
+}
+
+[data-theme='dark-protan-deutan'] {
+  --bg: oklch(18% 0.01 250);
+  --surface: oklch(24% 0.01 250);
+  --fg: oklch(96% 0 0);
+  --fg-muted: oklch(70% 0.02 250);
+  --accent: oklch(75% 0.14 240);
+  --accent-fg: oklch(15% 0 0);
+  --success: oklch(75% 0.12 220);
+  --danger: oklch(72% 0.18 60);
+  --warn: oklch(82% 0.16 85);
+  --info: oklch(72% 0.14 210);
+  --focus-ring: oklch(80% 0.16 240);
+  --border: oklch(32% 0.01 250);
+}
+
+[data-theme='dark-tritan'] {
+  --bg: oklch(18% 0.01 30);
+  --surface: oklch(24% 0.01 30);
+  --fg: oklch(96% 0 0);
+  --fg-muted: oklch(70% 0.02 30);
+  --accent: oklch(75% 0.16 350);
+  --accent-fg: oklch(15% 0 0);
+  --success: oklch(75% 0.14 145);
+  --danger: oklch(72% 0.2 20);
+  --warn: oklch(82% 0.16 50);
+  --info: oklch(72% 0.14 320);
+  --focus-ring: oklch(80% 0.18 350);
+  --border: oklch(32% 0.01 30);
+}
+
+[data-theme='increase-contrast'] {
+  --bg: oklch(100% 0 0);
+  --surface: oklch(100% 0 0);
+  --fg: oklch(0% 0 0);
+  --fg-muted: oklch(15% 0 0);
+  --accent: oklch(30% 0.25 250);
+  --accent-fg: oklch(100% 0 0);
+  --success: oklch(35% 0.2 145);
+  --danger: oklch(35% 0.3 25);
+  --warn: oklch(40% 0.22 75);
+  --info: oklch(30% 0.2 230);
+  --focus-ring: oklch(0% 0 0);
+  --border: oklch(0% 0 0);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Noto Sans TC', system-ui, -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  min-height: 100vh;
+}
+
+*:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 跳轉連結：對鍵盤使用者友善 */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  background: var(--surface);
+  color: var(--fg);
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--focus-ring);
+}
