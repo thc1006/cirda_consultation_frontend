@@ -44,6 +44,10 @@
 
 - 衛福部 1925 安心專線：24h 免付費 — https://www.mohw.gov.tw/cp-16-19209-1.html
 - Taipei Times 報導 1925 改號公告：https://www.taipeitimes.com/News/taiwan/archives/2019/07/03/2003718042
+- 陽明校區 健康心理中心：(02)2826-7000 #62026 — https://mhcc.nycu.edu.tw/
+- 交大校區 健康心理中心：(03)5712121 #51303 — https://counsel.sa.nctu.edu.tw/
+- 陽明校區 校安中心 24h：(02)2826-1100
+- 交大校區 校安中心 24h：(03)5712121 #31999、0972-705-557 — https://csrc.web.nycu.edu.tw/
 - 生命線 1995：24h — https://zh.wikipedia.org/zh-tw/自殺防治專線_(臺灣)
 - 張老師 1980：週一至六 09:00–21:00、週日 09:00–17:00
 - 陽明交通大學諮商中心：https://counseling.nycu.edu.tw/
