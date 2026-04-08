@@ -44,8 +44,9 @@ export const POST: RequestHandler = async ({ request }) => {
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const enc = new TextEncoder();
-      // 先 flush 一段空 chunk 讓 ingress / proxy 不要等 buffer 滿
-      controller.enqueue(enc.encode(''));
+      // 真實 ping 行：兩個 newline 形成 SSE-style 註解，確保第一個 byte 立刻送出
+      // 避開中介層的 first-byte timeout 與 buffering
+      controller.enqueue(enc.encode('\n\n'));
       const chars = Array.from(reply);
       for (const ch of chars) {
         controller.enqueue(enc.encode(ch));
@@ -55,12 +56,13 @@ export const POST: RequestHandler = async ({ request }) => {
     }
   });
 
+  // 注意：不送 Connection: keep-alive，HTTP/2 視為非法 connection-specific header
+  // SvelteKit / nginx ingress 自動處理 keep-alive 即可
   return new Response(stream, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
       'Cache-Control': 'no-cache',
-      'X-Accel-Buffering': 'no',
-      Connection: 'keep-alive'
+      'X-Accel-Buffering': 'no'
     }
   });
 };
