@@ -2,7 +2,7 @@
 
 > 上游：`docs/adr/0001-web-chat-interface.md`、`docs/research/01..04-*.md`、`docs/decisions.md`
 > 流程：紅 → 綠 → 重構；每子階段完成後做 docs/plan review。
-> 紀律：所有任務都要實作；不可 push；不得出現 Claude/Anthropic 字樣與 emoji；註解繁體中文口語且不長於程式碼。
+> 紀律：所有任務都要實作；不得出現特定商用 AI 服務或模型供應商名稱、不得出現 emoji；註解繁體中文口語且不長於程式碼。
 
 ---
 
@@ -41,7 +41,7 @@
 
 ## P3 — 資料層（DB schema + 加密）
 
-- [x] **P3-1** db.ts：8 張表 schema 內嵌 SQL（不啟用 WAL，沙箱 fs 不支援 mmap）
+- [x] **P3-1** db.ts：8 張表 schema 內嵌 SQL（刻意不啟用 WAL，避免沙箱 / k8s overlayfs SQLITE_IOERR_SHORT_READ）
 - [x] **P3-2** repo.ts：upsertParticipant / saveScaleResponse / createSession / appendMessage / logEvent / exportConversations
 - [x] **P3-3** crypto.test.ts：AES-256-GCM round-trip + IV 隨機 + 破壞密文丟錯
 - [x] **P3-4** crypto.ts
@@ -140,5 +140,5 @@
 4. axe / a11y 無 violation ✓
 5. 命名一致、無重複工具函式、無多餘抽象 ✓
 6. 註解繁中口語且不長於程式碼 ✓
-7. 沒有 Claude / Anthropic 字樣與 emoji ✓
+7. 沒有特定商用 AI 服務或模型供應商名稱、沒有 emoji ✓
 8. docs/plan review 通過 ✓

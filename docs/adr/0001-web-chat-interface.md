@@ -3,7 +3,7 @@
 - 狀態：Accepted（經 2026-04-08 覆驗 sub-agent 真實連網查證後修正）
 - 日期：2026-04-08
 - 決策者：開發團隊
-- 上游約束：`docs/decisions.md`、`CLAUDE.md`、`國網中心創進學院申請書.md`、`國網創進計畫_期中報告.txt`、`CBT.html`
+- 上游約束：`docs/decisions.md`、專案上游需求文件、國網中心創進學院申請書、國網創進計畫期中報告、既有 LINE-style MVP 原型
 - 上游證據：`docs/research/01..04-*.md`
 
 ## 一、背景與問題陳述
@@ -18,7 +18,7 @@
 4. 易於 Playwright / computer-use 自動化驗證。
 5. 後端可平滑替換（demo 用 Puter.js Gemini，正式用自家微調 LLM）。
 6. 個資合規（個資法 + GDPR Art.17 right to erasure）。
-7. 不可使用任何 Claude / Anthropic 字樣；不可有 emoji。
+7. 不得在程式碼、註解、報告中出現特定商用 AI 服務或模型供應商名稱；不可有 emoji。
 
 ## 三、決策
 
@@ -30,7 +30,7 @@
 - 與 open-webui (Svelte 系) 同生態，未來組件互通。
 
 ### 3.2 樣式與設計系統
-- **Tailwind CSS v4（OKLCH token）** + **Bits UI / Melt UI**（headless, a11y-first）。
+- **Tailwind CSS v3（OKLCH token via CSS variables）** + **headless 元件自實作**（a11y-first，未引入 Bits UI / Melt UI 以維持依賴最小）。
 - 七套主題：light-default / light-protan-deutan / light-tritan / dark-default / dark-protan-deutan / dark-tritan / increase-contrast。
 - semantic token：`--fg / --bg / --surface / --accent / --success / --danger / --warn / --info / --focus-ring`。
 - 切換以 `[data-theme=...]` 切換 CSS variables，無需 hydrate。
@@ -38,7 +38,7 @@
 ### 3.3 後端 / LLM
 - **Demo**：前端透過 SvelteKit 的 `+server.ts` 代理 Puter.js（`puter.ai.chat`，model `google/gemini-3-flash-preview`）。**所有金鑰留在伺服端**，前端不直接持有。
 - **正式**：替換為 OpenAI 相容介面的自家微調 LLM（保留同一 adapter interface）。
-- system prompt 由 `src/lib/server/prompts/` 集中管理，CBT/DBT/Integrated/Control 四 module 切換。
+- system prompt 由 `src/lib/prompts/` 集中管理（前後端共用同一份），CBT/DBT/Integrated/Control 四 module 切換。
 
 ### 3.4 資料儲存
 - **Demo**：SQLite（檔案）+ Drizzle ORM + better-sqlite3。
