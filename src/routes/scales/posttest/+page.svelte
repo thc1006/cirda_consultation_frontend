@@ -18,6 +18,7 @@
   let cuq = $state<number[]>(Array(16).fill(-1));
   let wai = $state<number[]>(Array(12).fill(-1));
   let suds = $state(5);
+  let saveError = $state<string | null>(null);
 
   onMount(() => {
     pseudoId = sessionStorage.getItem('cirda.pseudoId');
@@ -29,29 +30,35 @@
   }
 
   async function save(scale: string, payload: unknown, score: number | null) {
-    await fetch('/api/scale', {
+    const res = await fetch('/api/scale', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pseudoId, scale, phase: 'post', payload, score })
     });
+    if (!res.ok) throw new Error(`儲存 ${scale} 失敗 (HTTP ${res.status})`);
   }
 
   async function next() {
-    if (stage === 'phq9') {
-      await save('PHQ-9', phq9, scorePhq9(phq9));
-      stage = 'who5';
-    } else if (stage === 'who5') {
-      await save('WHO-5', who5, scoreWho5(who5));
-      stage = 'cuq';
-    } else if (stage === 'cuq') {
-      await save('CUQ', cuq, scoreCuq(cuq));
-      stage = 'wai';
-    } else if (stage === 'wai') {
-      await save('WAI-SR', wai, scoreWaiSr(wai).total);
-      stage = 'suds';
-    } else if (stage === 'suds') {
-      await save('SUDS', { value: suds }, suds);
-      stage = 'done';
+    saveError = null;
+    try {
+      if (stage === 'phq9') {
+        await save('PHQ-9', phq9, scorePhq9(phq9));
+        stage = 'who5';
+      } else if (stage === 'who5') {
+        await save('WHO-5', who5, scoreWho5(who5));
+        stage = 'cuq';
+      } else if (stage === 'cuq') {
+        await save('CUQ', cuq, scoreCuq(cuq));
+        stage = 'wai';
+      } else if (stage === 'wai') {
+        await save('WAI-SR', wai, scoreWaiSr(wai).total);
+        stage = 'suds';
+      } else if (stage === 'suds') {
+        await save('SUDS', { value: suds }, suds);
+        stage = 'done';
+      }
+    } catch (err) {
+      saveError = (err as Error).message + '，請稍後再試';
     }
   }
 
@@ -153,6 +160,10 @@
       </button>
     </div>
   {/if}
+
+  {#if saveError}
+    <p class="err" role="alert" data-testid="post-save-error">{saveError}</p>
+  {/if}
 </section>
 
 <style>
@@ -189,5 +200,11 @@
   }
   .primary:disabled {
     opacity: 0.5;
+  }
+  .err {
+    margin-top: 1rem;
+    color: var(--danger);
+    font-weight: 600;
+    text-align: center;
   }
 </style>

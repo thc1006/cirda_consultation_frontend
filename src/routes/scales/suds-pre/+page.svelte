@@ -6,6 +6,7 @@
   let suds = $state(5);
   let pseudoId = $state<string | null>(null);
   let saving = $state(false);
+  let saveError = $state<string | null>(null);
 
   onMount(() => {
     pseudoId = sessionStorage.getItem('cirda.pseudoId');
@@ -14,20 +15,27 @@
 
   async function next() {
     saving = true;
-    await fetch('/api/scale', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        pseudoId,
-        scale: 'SUDS',
-        phase: 'pre',
-        payload: { value: suds },
-        score: suds
-      })
-    });
-    sessionStorage.setItem('cirda.suds.pre', String(suds));
-    saving = false;
-    goto('/chat');
+    saveError = null;
+    try {
+      const res = await fetch('/api/scale', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pseudoId,
+          scale: 'SUDS',
+          phase: 'pre',
+          payload: { value: suds },
+          score: suds
+        })
+      });
+      if (!res.ok) throw new Error(`儲存失敗 (HTTP ${res.status})`);
+      sessionStorage.setItem('cirda.suds.pre', String(suds));
+      goto('/chat');
+    } catch (err) {
+      saveError = (err as Error).message + '，請稍後再試';
+    } finally {
+      saving = false;
+    }
   }
 </script>
 
@@ -66,6 +74,10 @@
   >
     {saving ? '送出中…' : '繼續，開始對話'}
   </button>
+
+  {#if saveError}
+    <p class="err" role="alert" data-testid="suds-pre-error">{saveError}</p>
+  {/if}
 </section>
 
 <style>
@@ -113,6 +125,12 @@
   }
   .primary:disabled {
     opacity: 0.5;
+  }
+  .err {
+    margin-top: 1rem;
+    color: var(--danger);
+    font-weight: 600;
+    text-align: center;
   }
   .sr-only {
     position: absolute;

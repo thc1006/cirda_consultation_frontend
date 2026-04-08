@@ -57,16 +57,25 @@
     localStorage.setItem('cirda.phq9', JSON.stringify({ answers, idx }));
   }
 
+  let saveError = $state<string | null>(null);
+
   async function finish() {
+    saveError = null;
     const score = scorePhq9(answers);
-    await fetch('/api/scale', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pseudoId, scale: 'PHQ-9', phase: 'pre', payload: answers, score })
-    });
-    sessionStorage.setItem('cirda.phq9.score', String(score));
-    localStorage.removeItem('cirda.phq9');
-    goto('/scales/suds-pre');
+    try {
+      const res = await fetch('/api/scale', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pseudoId, scale: 'PHQ-9', phase: 'pre', payload: answers, score })
+      });
+      if (!res.ok) throw new Error(`儲存失敗 (HTTP ${res.status})`);
+      // 成功才清掉暫存
+      sessionStorage.setItem('cirda.phq9.score', String(score));
+      localStorage.removeItem('cirda.phq9');
+      goto('/scales/suds-pre');
+    } catch (err) {
+      saveError = (err as Error).message + '，請稍後再試';
+    }
   }
 
   let allAnswered = $derived(answers.every((v) => v !== -1));
@@ -146,6 +155,10 @@
     <p class="total" data-testid="phq9-total">
       目前總分：{total} 分（{severityHint(total)}，僅供自我覺察參考，非診斷）
     </p>
+  {/if}
+
+  {#if saveError}
+    <p class="err" role="alert" data-testid="phq9-save-error">{saveError}</p>
   {/if}
 </section>
 
@@ -248,5 +261,11 @@
     margin-top: 1rem;
     text-align: center;
     color: var(--fg-muted);
+  }
+  .err {
+    margin-top: 1rem;
+    color: var(--danger);
+    font-weight: 600;
+    text-align: center;
   }
 </style>
