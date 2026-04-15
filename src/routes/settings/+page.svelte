@@ -1,12 +1,15 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { goto, afterNavigate } from '$app/navigation';
   import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
 
+  // afterNavigate 的 from 在站內導航時才有值，直接輸入 URL 進來時為 null
+  let cameFromApp = false;
+  afterNavigate(({ from }) => {
+    cameFromApp = !!from;
+  });
+
   function goBack() {
-    // 僅在上一頁確認為本站時才返回，否則導回首頁
-    const sameOrigin =
-      !!document.referrer && new URL(document.referrer).origin === location.origin;
-    if (sameOrigin) {
+    if (cameFromApp) {
       history.back();
     } else {
       goto('/');
