@@ -1,12 +1,15 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
 
   function goBack() {
-    // 有瀏覽器歷史就回上一頁，沒有就回首頁
-    if (history.length > 1) {
+    // 僅在上一頁確認為本站時才返回，否則導回首頁
+    const sameOrigin =
+      !!document.referrer && new URL(document.referrer).origin === location.origin;
+    if (sameOrigin) {
       history.back();
     } else {
-      window.location.href = '/';
+      goto('/');
     }
   }
 </script>

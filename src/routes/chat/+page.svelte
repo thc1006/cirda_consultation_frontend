@@ -26,8 +26,8 @@
       return;
     }
 
-    // 如果已有 session（例如從設定頁返回），保留先前對話不重建
-    if (chatStream.sessionId) {
+    // 同一人、仍有對話（例如從設定頁返回）→ 保留先前對話不重建
+    if (chatStream.sessionId && chatStream.pseudoId === pseudoId && chatStream.messages.length > 0) {
       sessionReady = true;
       return;
     }
@@ -83,6 +83,7 @@
   }
 
   function endChat() {
+    chatStream.reset();
     goto('/scales/posttest');
   }
 

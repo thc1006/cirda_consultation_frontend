@@ -2,7 +2,7 @@ import { test, expect } from './fixtures';
 import AxeBuilder from '@axe-core/playwright';
 
 // 針對所有關鍵頁面做 a11y 掃描
-// 對 phq9 / chat / posttest 需要先 seed sessionStorage 才看得到內容
+// 對 bsrs5 / chat / posttest 需要先 seed sessionStorage 才看得到內容
 async function seedSession(page: import('@playwright/test').Page) {
   await page.goto('/');
   await page.evaluate(() => {
@@ -31,10 +31,10 @@ test('a11y /settings', async ({ page }) => {
   await scan(page, '/settings');
 });
 
-test('a11y /scales/phq9', async ({ page }) => {
+test('a11y /scales/bsrs5', async ({ page }) => {
   await seedSession(page);
-  await page.goto('/scales/phq9');
-  await scan(page, '/scales/phq9');
+  await page.goto('/scales/bsrs5');
+  await scan(page, '/scales/bsrs5');
 });
 
 test('a11y /scales/suds-pre', async ({ page }) => {

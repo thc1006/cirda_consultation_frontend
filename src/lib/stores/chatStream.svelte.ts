@@ -67,6 +67,8 @@ class ChatStreamStore {
     this.status = 'idle';
     this.messages = [];
     this.errorText = null;
+    this.sessionId = null;
+    this.pseudoId = null;
     this.statusHint = null;
     this.window = new RollingWindow(10);
     this.lastAssistantDoneAt = 0;
