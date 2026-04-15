@@ -24,7 +24,7 @@
     if (saved) {
       try {
         const obj = JSON.parse(saved);
-        if (Array.isArray(obj.answers)) answers = obj.answers;
+        if (Array.isArray(obj.answers) && obj.answers.length === 6) answers = obj.answers;
         if (typeof obj.idx === 'number') idx = obj.idx;
       } catch {}
     }
@@ -38,8 +38,10 @@
       pick(parseInt(e.key, 10) - 1);
     } else if (e.key === 'ArrowLeft' && idx > 0) {
       idx--;
+      persist();
     } else if (e.key === 'ArrowRight' && answers[idx] !== -1 && idx < 5) {
       idx++;
+      persist();
     }
   }
 
@@ -170,7 +172,7 @@
           type="button"
           class="ghost"
           disabled={idx === 0}
-          onclick={() => idx--}
+          onclick={() => { idx--; persist(); }}
           data-testid="bsrs5-prev"
         >
           上一題
@@ -180,7 +182,7 @@
             type="button"
             class="primary"
             disabled={answers[idx] === -1}
-            onclick={() => idx++}
+            onclick={() => { idx++; persist(); }}
             data-testid="bsrs5-next"
           >
             下一題
