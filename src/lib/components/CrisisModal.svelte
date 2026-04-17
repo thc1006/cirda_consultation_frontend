@@ -1,13 +1,14 @@
 <script lang="ts">
-  // Non-blocking 危機分流 modal：顯示後使用者可選擇繼續或結束實驗
-  // 觸發來源：PHQ-9 第 9 題 > 0 或聊天中偵測到高風險關鍵字
+  // 危機分流 modal：blocking 模式下只能離開，non-blocking 可選繼續
+  // 觸發來源：BSRS-5 第 6 題 > 0、聊天關鍵字
   type Props = {
     open: boolean;
-    source: 'phq9_item9' | 'chat_keyword';
+    source: 'bsrs5_item6' | 'chat_keyword';
+    blocking?: boolean;
     onContinue?: () => void;
     onExit?: () => void;
   };
-  let { open = $bindable(false), source, onContinue, onExit }: Props = $props();
+  let { open = $bindable(false), source, blocking = false, onContinue, onExit }: Props = $props();
 
   function handleContinue() {
     open = false;
@@ -55,25 +56,27 @@
       </ul>
 
       <p class="hint">
-        觸發來源：{source === 'phq9_item9' ? '量表第 9 題回應' : '對話中關鍵字'}
+        觸發來源：{source === 'bsrs5_item6' ? '量表第 6 題回應' : '對話中關鍵字'}
       </p>
 
       <div class="actions">
+        {#if !blocking}
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-testid="crisis-continue"
+            onclick={handleContinue}
+          >
+            我了解，繼續進行
+          </button>
+        {/if}
         <button
           type="button"
-          class="btn btn-primary"
-          data-testid="crisis-continue"
-          onclick={handleContinue}
-        >
-          我了解，繼續進行
-        </button>
-        <button
-          type="button"
-          class="btn btn-ghost"
+          class="btn {blocking ? 'btn-primary' : 'btn-ghost'}"
           data-testid="crisis-exit"
           onclick={handleExit}
         >
-          結束本次活動
+          {blocking ? '返回首頁' : '結束本次活動'}
         </button>
       </div>
     </div>

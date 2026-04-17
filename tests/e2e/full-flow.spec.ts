@@ -1,6 +1,6 @@
 import { test, expect } from './fixtures';
 
-test('完整流程：同意 → PHQ-9 → SUDS-pre → 聊天 → 後測 → 匯出有資料', async ({
+test('完整流程：同意 → BSRS-5 → SUDS-pre → 聊天 → 後測 → 匯出有資料', async ({
   page,
   request
 }) => {
@@ -9,13 +9,13 @@ test('完整流程：同意 → PHQ-9 → SUDS-pre → 聊天 → 後測 → 匯
   await page.getByTestId('consent-check').check();
   await page.getByTestId('start-btn').click();
 
-  // PHQ-9 全部 0
-  await expect(page).toHaveURL(/\/scales\/phq9/);
-  for (let i = 0; i < 9; i++) {
-    await page.getByTestId(`phq9-q${i}-opt0`).first().click();
-    if (i < 8) await page.getByTestId('phq9-next').click();
+  // BSRS-5 全部 0
+  await expect(page).toHaveURL(/\/scales\/bsrs5/);
+  for (let i = 0; i < 6; i++) {
+    await page.getByTestId(`bsrs5-q${i}-opt0`).first().click();
+    if (i < 5) await page.getByTestId('bsrs5-next').click();
   }
-  await page.getByTestId('phq9-submit').click();
+  await page.getByTestId('bsrs5-submit').click();
 
   // SUDS pre
   await expect(page).toHaveURL(/\/scales\/suds-pre/);
@@ -23,20 +23,19 @@ test('完整流程：同意 → PHQ-9 → SUDS-pre → 聊天 → 後測 → 匯
 
   // chat
   await expect(page).toHaveURL(/\/chat/);
-  // 等 session 建立完成（textarea 從 disabled 變 enabled）
   await expect(page.getByTestId('chat-input')).toBeEnabled();
   await page.getByTestId('chat-input').fill('我這禮拜報告寫不完很焦慮');
   await page.getByTestId('chat-send-btn').click();
   await expect(page.locator('[data-testid^="msg-bubble-"]')).toHaveCount(2, { timeout: 10_000 });
 
-  // 等 chatStream 整個 send() 跑完（status 回 idle，代表 persistTurn 已完成）
+  // 等 chatStream 整個 send() 跑完
   await expect(page.getByTestId('chat-form')).toHaveAttribute('data-chat-status', 'idle', {
     timeout: 15_000
   });
 
   await page.getByTestId('end-chat-btn').click();
 
-  // posttest：使用 ScaleQuestion 共用元件，每個選項都有 data-testid
+  // posttest：使用 ScaleQuestion 共用元件
   await expect(page).toHaveURL(/\/scales\/posttest/);
 
   // PHQ-9 重測：全選 0
@@ -75,7 +74,6 @@ test('完整流程：同意 → PHQ-9 → SUDS-pre → 聊天 → 後測 → 匯
   expect(r.status()).toBe(200);
   const text = await r.text();
   expect(text.length).toBeGreaterThan(0);
-  // 至少要有兩條（user + assistant）
   const lines = text.trim().split('\n').filter(Boolean);
   expect(lines.length).toBeGreaterThanOrEqual(2);
 });

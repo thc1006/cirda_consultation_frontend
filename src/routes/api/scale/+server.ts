@@ -2,7 +2,7 @@ import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 import { saveScaleResponse } from '$lib/server/repo';
 
-const ALLOWED_SCALES = new Set(['PHQ-9', 'WHO-5', 'CUQ', 'WAI-SR', 'SUDS']);
+const ALLOWED_SCALES = new Set(['BSRS-5', 'PHQ-9', 'WHO-5', 'CUQ', 'WAI-SR', 'SUDS']);
 const ALLOWED_PHASES = new Set(['pre', 'post']);
 
 export const POST: RequestHandler = async ({ request }) => {

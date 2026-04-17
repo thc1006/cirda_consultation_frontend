@@ -1,5 +1,5 @@
 <script lang="ts">
-  // 入口頁：知情同意 + 受試者代號輸入 → 進入前測 PHQ-9
+  // 入口頁：知情同意 + 受試者代號輸入 → 進入前測 BSRS-5
   import { goto } from '$app/navigation';
 
   let rawId = $state('');
@@ -28,7 +28,7 @@
       if (!res.ok) throw new Error('註冊失敗');
       const data = await res.json();
       sessionStorage.setItem('cirda.pseudoId', data.pseudoId);
-      goto('/scales/phq9');
+      goto('/scales/bsrs5');
     } catch (err) {
       errorText = (err as Error).message;
     } finally {

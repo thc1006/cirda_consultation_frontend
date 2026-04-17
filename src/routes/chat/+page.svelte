@@ -10,9 +10,11 @@
   import { detectRisk } from '$lib/utils/riskKeywords';
   import MessageList from '$lib/components/MessageList.svelte';
   import CrisisModal from '$lib/components/CrisisModal.svelte';
+  import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
 
   let input = $state('');
   let showCrisis = $state(false);
+  let showSettings = $state(false);
   let pseudoId = $state<string | null>(null);
   let initError = $state<string | null>(null);
   let sessionReady = $state(false);
@@ -23,6 +25,13 @@
       goto('/');
       return;
     }
+
+    // 同一人、仍有對話（例如從設定頁返回）→ 保留先前對話不重建
+    if (chatStream.sessionId && chatStream.pseudoId === pseudoId && chatStream.messages.length > 0) {
+      sessionReady = true;
+      return;
+    }
+
     chatStream.reset();
     try {
       const r = await fetch('/api/session', {
@@ -74,6 +83,7 @@
   }
 
   function endChat() {
+    chatStream.reset();
     goto('/scales/posttest');
   }
 
@@ -91,16 +101,41 @@
       <h1>諮心好友</h1>
       <p class="sub">你可以慢慢說，想到什麼說什麼。沒有對錯。</p>
     </div>
-    <button
-      type="button"
-      class="end"
-      onclick={endChat}
-      data-testid="end-chat-btn"
-      disabled={userTurns < 1}
-    >
-      結束並進入後測
-    </button>
+    <div class="bar-actions">
+      <button
+        type="button"
+        class="icon-btn"
+        onclick={() => (showSettings = !showSettings)}
+        data-testid="chat-settings-btn"
+        aria-label="外觀設定"
+        aria-expanded={showSettings}
+      >
+        &#9881;
+      </button>
+      <button
+        type="button"
+        class="end"
+        onclick={endChat}
+        data-testid="end-chat-btn"
+        disabled={userTurns < 1}
+      >
+        結束並進入後測
+      </button>
+    </div>
   </header>
+
+  {#if showSettings}
+    <div class="settings-drawer" data-testid="chat-settings-drawer">
+      <ThemeSwitcher />
+      <button
+        type="button"
+        class="close-drawer"
+        onclick={() => (showSettings = false)}
+      >
+        收起
+      </button>
+    </div>
+  {/if}
 
   {#if initError}
     <p class="err" role="alert">無法建立對話：{initError}</p>
@@ -182,6 +217,23 @@
     color: var(--fg-muted);
     font-size: 0.85rem;
   }
+  .bar-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .icon-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: grid;
+    place-items: center;
+  }
   .end {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -193,6 +245,22 @@
   }
   .end:disabled {
     opacity: 0.5;
+  }
+  .settings-drawer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .close-drawer {
+    margin-top: 0.75rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--fg);
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
   }
   .empty {
     padding: 2rem 1rem;
